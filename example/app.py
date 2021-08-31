@@ -12,9 +12,8 @@ from ddlf.cluster import *
 from ddlf.tools import *
 
 class App(object):
-    def __init__(self, cluster: Cluster, N: int):
-        self.cluster = cluster
-        self.N = N
+    def __init__(self):
+        super().__init__()
         
     async def connect(self):
         await self.cluster.connect()

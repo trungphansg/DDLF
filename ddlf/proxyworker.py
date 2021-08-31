@@ -49,6 +49,9 @@ class ProxyWorker(IWorker):
     async def load_mnist(self):
         return await self.rpc(Request('load_mnist'))
 
+    async def load_partition(self, **kwargs):
+        return await self.rpc(Request('load_partition', **kwargs))
+
     async def ping(self):
         return await self.rpc(Request('ping'))
 
@@ -72,5 +75,8 @@ class ProxyWorker(IWorker):
         # close the connection
         self.writer.close()
         return res
+
+    async def train(self, **kwargs):
+        return await self.rpc(Request('train', **kwargs))
 
 

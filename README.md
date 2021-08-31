@@ -9,7 +9,7 @@
 
 ## Installation
 * python3.7+ 
-* pip install numpy pympler tensorflow pyyaml
+* pip install -r requirements.txt
 
 * Master node:
     - worker.py

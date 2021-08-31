@@ -88,6 +88,8 @@ class Worker(IWorker):
             res = await self.load_cifar10()
         elif req.command == 'load_mnist':
             res = await self.load_mnist()
+        elif req.command == 'load_partition':
+            res = await self.load_partition(**req.kwargs)
         elif req.command == 'ping':
             res = await self.ping()
         elif req.command == 'remove_method':
@@ -104,6 +106,8 @@ class Worker(IWorker):
             shutdown_flag = True
             loop = False
             res = self.host, 'OK'
+        elif req.command == 'train':
+            res = await self.train(**req.kwargs)
         # print(f"Finished handling the request {req.command!r}.")
         return loop, res, shutdown_flag
 
@@ -179,6 +183,19 @@ class Worker(IWorker):
             return self.host, 'OK'
         except Exception as e:
             print('Exception when executing load_mnist():', e)
+            return self.host, e
+
+    async def load_partition(self, permutation):
+        """
+        Load a partition of data for training the the model on a worker node.
+        """
+        try:
+            n = partition_size = len(self.x_train) // self.N
+            i = self.id
+            self.x_train_partition = self.x_train[permutation][(i - 1) * n:i * n]
+            self.y_train_partition = self.y_train[permutation][(i - 1) * n:i * n]
+            return self.host, 'OK'
+        except Exception as e:
             return self.host, e
 
     async def ping(self):
@@ -257,6 +274,19 @@ class Worker(IWorker):
         self.loop.stop()
         print("The event loop has stopped")
         print('Finished executing shutdown().')
+
+    async def train(self, weights, worker_epochs, batch_size):
+        """
+        Train the model on a worker node.
+        """
+        self.model.set_weights(weights)
+        self.model.fit(self.x_train_partition, self.y_train_partition,
+                       epochs=worker_epochs, batch_size=batch_size,
+                       validation_split=0.1, verbose=2)
+        new_weights = self.model.get_weights()
+        gradients = subtract(weights, new_weights)
+        gradients = divide(gradients, self.N)
+        return (self.host, 'OK'), gradients
 
 # worker = Worker(id=int(sys.argv[1]), host=sys.argv[2], N=int(sys.argv[3]))
 # worker.start()

@@ -4,10 +4,10 @@
 # @last modified date:
 # @note:
 from ddlf.cluster import *
-from ddlf.app import *
+from app import *
 
 
-async def main(N=9):
+async def main():
     app = App()
     await app.connect()
     await app.load_dataset()

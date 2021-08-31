@@ -55,6 +55,11 @@ class Cluster(IWorker):
                                      for worker in self.workers], return_exceptions=True)
         print(f"load_mnist():\n{res}")
 
+    async def load_partition(self, permutation):
+        res = await asyncio.gather(*[worker.load_partition(permutation=permutation)
+                                     for worker in self.workers], return_exceptions=True)
+        print(f"load_partition():\n{res}")
+
     async def ping(self):
         res = await asyncio.gather(*[worker.ping() for worker in self.workers],
                                    return_exceptions=True)
@@ -127,3 +132,10 @@ class Cluster(IWorker):
         res = await asyncio.gather(*[worker.shutdown() for worker in self.workers],
                                    return_exceptions=True)
         print(f"shutdown():\n{res}")
+
+    async def train(self, weights, worker_epochs, batch_size):
+        res = await asyncio.gather(*[worker.train(weights=weights,
+                                                  worker_epochs=worker_epochs,
+                                                  batch_size=batch_size) for worker in self.workers],
+                                   return_exceptions=True)
+        print(f"train():\n{res}")

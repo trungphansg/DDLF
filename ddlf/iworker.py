@@ -22,6 +22,9 @@ class IWorker(object):
     async def load_mnist(self):
         raise NotImplemented
 
+    async def load_partition(self, permutation):
+        raise NotImplemented
+
     async def ping(self):
         raise NotImplemented
 
@@ -41,4 +44,7 @@ class IWorker(object):
         raise NotImplemented
 
     async def shutdown(self):
+        raise NotImplemented
+
+    async def train(self, weights, worker_epochs, batch_size):
         raise NotImplemented
