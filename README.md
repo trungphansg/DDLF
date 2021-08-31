@@ -49,7 +49,7 @@
 ## Architecture
 ![The architecture|300x200,50%](images/architecture.png)
 
-
+<img src="images/architecture.png" width="50%">
 
 ## Files
 * worker: runs on worker nodes
