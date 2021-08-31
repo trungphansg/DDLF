@@ -47,7 +47,7 @@
     - task-*.py
     
 ## Architecture
-![The architecture](images/architecture.png){ width=50% }
+![The architecture|300x200,50%](images/architecture.png)
 
 
 
