@@ -6,7 +6,6 @@
 @created date: 2021-06-28 \
 @last modified date: 2021-08-22\
 @version: 2.2
-@note:
 
 ## What is new?
 * From version 1.0:
@@ -47,8 +46,9 @@
     - task-*.py
     
 ## Architecture
+<!--
 ![The architecture|300x200,50%](images/architecture.png)
-
+-->
 <img src="images/architecture.png" width="50%">
 
 ## Files
@@ -67,13 +67,11 @@
 * shutdown: shutting down the system
 
 ## Testing
-* start-cluster.py
-* task-*.py
+* start-cluster.py: start the cluster
+* task-*.py: execute a task
 
 ## References
 https://stackabuse.com/python-async-await-tutorial \
 https://docs.python.org/3/library/asyncio-task.html#running-tasks-concurrently \
 https://docs.python.org/3/library/asyncio-stream.html \
 https://stackoverflow.com/questions/62383366/asyncio-streamwriter-sending-multiple-writes
-
-pip install pyyaml
