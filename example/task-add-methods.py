@@ -3,7 +3,7 @@
 # @created date: 2021-07-18
 # @last modified date:
 # @note:
-from ddltrain.cluster import *
+from ddlf.cluster import *
 
 async def f(self, lst):
     return sum(lst)

@@ -5,7 +5,7 @@
 # @note:
 import numpy as np
 import time
-from ddltrain.cluster import *
+from ddlf.cluster import *
 
 
 class IApp(IWorker):

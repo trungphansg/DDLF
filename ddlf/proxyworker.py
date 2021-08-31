@@ -4,10 +4,9 @@
 # @last modified date: 2021-07-18
 # @note: adding id to ProxyWorker
 import asyncio
-import pickle
-from ddltrain.iworker import *
-from ddltrain.request import *
-from ddltrain.transport import *
+from ddlf.iworker import *
+from ddlf.request import *
+from ddlf.transport import *
 
 
 class ProxyWorker(IWorker):

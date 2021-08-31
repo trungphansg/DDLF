@@ -13,10 +13,10 @@ from pympler import asizeof
 from tensorflow.keras import datasets, layers, models, optimizers, utils
 from tensorflow.keras.models import *
 from textwrap import dedent
-from ddltrain.iworker import *
-from ddltrain.request import *
-from ddltrain.tools import *
-from ddltrain.transport import *
+from ddlf.iworker import *
+from ddlf.request import *
+from ddlf.tools import *
+from ddlf.transport import *
 
 
 class Worker(IWorker):
