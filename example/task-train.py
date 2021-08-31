@@ -3,8 +3,8 @@
 # @created date: 2021-06-28
 # @last modified date:
 # @note:
-from ddltrain.cluster import *
-from ddltrain.app import *
+from ddlf.cluster import *
+from ddlf.app import *
 
 
 async def main(N=9):

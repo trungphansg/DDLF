@@ -4,7 +4,7 @@
 # @last modified date:
 # @note:
 from multiprocessing import Process
-from ddltrain.worker import *
+from ddlf.worker import *
 
 
 def main(i):

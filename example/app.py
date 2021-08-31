@@ -8,8 +8,8 @@ import time
 from pympler import asizeof
 from tensorflow.keras import datasets, layers, models, optimizers, utils
 
-from ddltrain.cluster import *
-from ddltrain.tools import *
+from ddlf.cluster import *
+from ddlf.tools import *
 
 class App(object):
     def __init__(self, cluster: Cluster, N: int):

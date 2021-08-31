@@ -3,7 +3,7 @@
 # @created date: 2021-06-28
 # @last modified date:
 # @note:
-from ddltrain.cluster import *
+from ddlf.cluster import *
 
 
 async def calculate(self, a, b, c):

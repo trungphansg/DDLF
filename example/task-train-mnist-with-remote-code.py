@@ -7,8 +7,8 @@ import numpy as np
 import time
 from pympler import asizeof
 # from tensorflow.keras import datasets, layers, models, optimizers, utils
-from ddltrain.iapp import *
-from ddltrain.cluster import *
+from ddlf.iapp import *
+from ddlf.cluster import *
 
 
 class App(IApp):
