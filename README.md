@@ -7,28 +7,6 @@
 @last modified date: 2021-08-22\
 @version: 2.2
 
-## What is new?
-* From version 1.0:
-    * Instead of just sending one request on one connection, we can now send multiple requests on one connection.
-* From version 1.1:
-    * Using the compress pickle package with compression="lzma"
-* From version 1.2:
-    * Using the pickle package with zlib package for compression    
-* From version 2.0:
-    * Sending code to workers and running code remotely
-    * Adding asynchronous distributed training capabilities 
-    * Renaming: 
-        * Workers -> Cluster
-        * RPC -> ProxyWorker
-        * rpcs -> workers
-        * rpc -> worker
-* From version 2.1:
-    * Modifying the method Cluster.run_method()    
-* From version 2.2:    
-    * Adding the config.py file
-    * Perfecting the framework
-    
-
 ## Installation
 * python3.7+ 
 * pip install numpy pympler tensorflow pyyaml
@@ -46,9 +24,6 @@
     - task-*.py
     
 ## Architecture
-<!--
-![The architecture|300x200,50%](images/architecture.png)
--->
 <img src="images/architecture.png" width="50%">
 
 ## Files
