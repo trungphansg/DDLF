@@ -1,52 +1,39 @@
-# Distributed DL Training Framework
+# Distributed Deep Learning Training Framework (DDLF)
 
 ## Information
 @author: Trung Phan \
 @email: trungphansg@gmail.com \
 @created date: 2021-06-28 \
-@last modified date: 2021-08-22\
 @version: 2.2
 
+## Directories
+
+* ddlf: contains files of the DDLF 
+* examples: contains examples
+* scripts: contains utility scripts
+
 ## Installation
+
 * python3.7+ 
 * pip install -r requirements.txt
-
-* Master node:
-    - worker.py
-    - request.py
-    - tools.py
-    - transport.py
-* Worker nodes:
-    - config.py
-    - rpc.py
-    - proxyworker.py
-    - app.py
-    - task-*.py
+* install ssh
+* Run script install.sh to copy directory ddlf to all workers in the cluster
     
 ## Architecture
-<img src="images/architecture.png" width="50%">
-
-## Files
-* worker: runs on worker nodes
-* config, proxy, master, app, tasks: runs on the master nodes
+![The Architecture](images/architecture.png "The Architecture")
 
 ## Configuration
 * Open file config.py:
     * hosts: list of worker nodes
     * ports: list of worker nodes' ports
 
-## Running
-* cd ddl 
-* start N (N is the number of workers): starting the system
-* python3.8 task-*: running a task
-* shutdown: shutting down the system
+## Running on a cluster
+* cd ddlf 
+* start N (N is the number of workers): starting the cluster
+* python task-*.py (replace * with a task name): executing a task
+* stop.sh: shutting down the system
 
-## Testing
-* start-cluster.py: start the cluster
-* task-*.py: execute a task
-
-## References
-https://stackabuse.com/python-async-await-tutorial \
-https://docs.python.org/3/library/asyncio-task.html#running-tasks-concurrently \
-https://docs.python.org/3/library/asyncio-stream.html \
-https://stackoverflow.com/questions/62383366/asyncio-streamwriter-sending-multiple-writes
+## Testing on localhost
+* start-cluster.py: starting the cluster
+* task-*.py: executing a task
+* task-shutdown.py: shutting down the cluster

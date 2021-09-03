@@ -29,7 +29,8 @@ async def main():
     await cluster.run_code(code2)
     res = await cluster.run_method(g, a=4000, b=2000 )
     print(f"result: {res}")
-    await cluster.show_data()
+    res = await cluster.show_data()
+    print(f"result: {res}")
     # await cluster.clean()
     await cluster.close()
 

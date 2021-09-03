@@ -9,8 +9,7 @@ from ddlf.cluster import *
 async def main():
     cluster = Cluster()
     await cluster.connect()
-    for i in range(3):
-        await cluster.ping()
+    await cluster.ping()
     await cluster.close()
 
 

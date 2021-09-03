@@ -1,7 +1,7 @@
 # Distributed DL Server runs on worker nodes
 # @author: Trung Phan
 # @created date: 2021-06-28
-# @last modified date: 2021-07-18
+# @last modified date: 2021-09-03
 # @note:
 import asyncio
 import gc
@@ -15,6 +15,8 @@ from tensorflow.keras.models import *
 from textwrap import dedent
 from ddlf.iworker import *
 from ddlf.request import *
+from ddlf.response import *
+from ddlf.status import *
 from ddlf.tools import *
 from ddlf.transport import *
 
@@ -78,7 +80,7 @@ class Worker(IWorker):
         # print(f"Handling the request {req.command!r}...")
         # processing the request
         if req.command == 'add_method':
-            res = await self.add_method(method_code=req.args[0], method_name=req.args[1])
+            res = await self.add_method(**req.kwargs)
         if req.command == 'clean':
             res = await self.clean()
         elif req.command == 'close':
@@ -105,7 +107,7 @@ class Worker(IWorker):
         elif req.command == 'shutdown':
             shutdown_flag = True
             loop = False
-            res = self.host, 'OK'
+            res = Response(Status.OK, None)
         elif req.command == 'train':
             res = await self.train(**req.kwargs)
         # print(f"Finished handling the request {req.command!r}.")
@@ -122,10 +124,10 @@ class Worker(IWorker):
             code = f'''{method_code}\nsetattr(Worker, {method_name!r}, {method_name})'''
             exec(code)
             print(f'Finished executing add_method({method_name}).')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print(f'Exception when executing add_method({method_name}):', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def clean(self):
         print('-' * self.n, '\nExecuting clean()...')
@@ -140,13 +142,13 @@ class Worker(IWorker):
             self.data.clear()
             gc.collect()
             print('Finished executing clean().')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print('Exception when executing clean():', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def close(self):
-        return self.host, 'OK'
+        return Response(Status.OK, None)
 
     async def load_cifar10(self):
         print('-' * self.n, '\nExecuting load_cifar10()...')
@@ -160,10 +162,10 @@ class Worker(IWorker):
             self.y_train = utils.to_categorical(self.y_train, nb_classes)
             self.y_test = utils.to_categorical(self.y_test, nb_classes)
             print('Finished executing load_cifar10().')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print('Exception when executing load_cifar10():', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def load_mnist(self):
         print('-' * self.n, '\nExecuting load_mnist()...')
@@ -180,10 +182,10 @@ class Worker(IWorker):
             self.y_train = utils.to_categorical(self.y_train, nb_classes)
             self.y_test = utils.to_categorical(self.y_test, nb_classes)
             print('Finished executing load_mnist().')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print('Exception when executing load_mnist():', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def load_partition(self, permutation):
         """
@@ -194,23 +196,23 @@ class Worker(IWorker):
             i = self.id
             self.x_train_partition = self.x_train[permutation][(i - 1) * n:i * n]
             self.y_train_partition = self.y_train[permutation][(i - 1) * n:i * n]
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def ping(self):
         print('-' * self.n, '\nExecuting ping()...')
-        return self.host, 'OK'
+        return Response(Status.OK, None)
 
     async def remove_method(self, method_name):
         print('-' * self.n, f'\nExecuting remove_method({method_name})...')
         try:
             delattr(Worker, method_name)
             print(f'Finished executing remove_method({method_name}).')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print(f'Exception when executing remove_method({method_name}):', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def run(self, method_name, **kwargs):
         # method_name = kwargs['method_name']
@@ -220,12 +222,12 @@ class Worker(IWorker):
         try:
             code = f'''setattr(Worker, '_method', self.{method_name})'''
             exec(code)
-            res = await self._method(**kwargs)
+            result = await self._method(**kwargs)
             print(f'Finished executing run({method_name}).')
-            return (self.host, 'OK'), res
+            return Response(Status.OK, result)
         except Exception as e:
             print(f'Exception when executing run({method_name}):', e)
-            return (self.host, e), None
+            return Response(Status.ERROR, e)
 
     async def run_code(self, code):
         print('-' * self.n, '\nExecuting run_code()...')
@@ -236,10 +238,10 @@ class Worker(IWorker):
             # print(f"Code:\n{code}")
             exec(code)
             print('Finished executing run_code().')
-            return self.host, 'OK'
+            return Response(Status.OK, None)
         except Exception as e:
             print('Exception when executing run_code():', e)
-            return self.host, e
+            return Response(Status.ERROR, e)
 
     async def run_method(self, method_code, method_name, **kwargs):
         print('-' * self.n, f'\nExecuting run_method({method_name})...')
@@ -251,19 +253,19 @@ class Worker(IWorker):
         try:
             code = f'''{method_code}\nsetattr(Worker, '_method', {method_name})'''
             exec(code)
-            res = await self._method(**kwargs)
+            result = await self._method(**kwargs)
             # locals = {}
             # code = f'''res = self.{method_name}(**kwargs)'''
             # exec(code, None, locals)
             print(f'Finished executing run_method({method_name}).')
-            return (self.host, 'OK'), res
+            return Response(Status.OK, result)
         except Exception as e:
             print(f'Exception when executing run_method({method_name}):', e)
-            return (self.host, e), None
+            return Response(Status.ERROR, e)
 
     async def show_data(self):
         print('-' * self.n, '\nExecuting show_data()...')
-        return self.host, 'OK', self.data
+        return Response(Status.OK, self.data)
 
     async def shutdown(self):
         print('-' * self.n, '\nExecuting shutdown()...')
@@ -279,14 +281,18 @@ class Worker(IWorker):
         """
         Train the model on a worker node.
         """
-        self.model.set_weights(weights)
-        self.model.fit(self.x_train_partition, self.y_train_partition,
-                       epochs=worker_epochs, batch_size=batch_size,
-                       validation_split=0.1, verbose=2)
-        new_weights = self.model.get_weights()
-        gradients = subtract(weights, new_weights)
-        gradients = divide(gradients, self.N)
-        return (self.host, 'OK'), gradients
+        try:
+            self.model.set_weights(weights)
+            self.model.fit(self.x_train_partition, self.y_train_partition,
+                           epochs=worker_epochs, batch_size=batch_size,
+                           validation_split=0.1, verbose=2)
+            new_weights = self.model.get_weights()
+            gradients = subtract(weights, new_weights)
+            gradients = divide(gradients, self.N)
+            return Response(Status.OK, gradients)
+        except Exception as e:
+            print(f'Exception when executing train(weights={weights}, worker_epochs={worker_epochs}, batch_size={batch_size}):', e)
+            return Response(Status.ERROR, e)
 
 # worker = Worker(id=int(sys.argv[1]), host=sys.argv[2], N=int(sys.argv[3]))
 # worker.start()

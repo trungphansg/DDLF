@@ -1,0 +1,1 @@
+python3.8 ddltrain2/task-shutdown.py

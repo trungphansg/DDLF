@@ -48,6 +48,7 @@ class IApp(IWorker):
     # perform asynchronous distributed training
     async def train_async(self, master_epochs, worker_epochs, batch_size):
         data_size = len(self.x_train)
+        print(f"Data size: {data_size}")
         await self.cluster.add_method(self.__train)
         await self.cluster.add_method(self.__load_partition)
 

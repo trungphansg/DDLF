@@ -4,8 +4,11 @@
 # @last modified date: 2021-07-18
 # @note: adding id to ProxyWorker
 import asyncio
+import sys
 from ddlf.iworker import *
 from ddlf.request import *
+from ddlf.response import *
+from ddlf.status import *
 from ddlf.transport import *
 
 
@@ -19,29 +22,43 @@ class ProxyWorker(IWorker):
         return f'Proxy worker: {{ip:{self.host}, port: {self.port}}}'
 
     async def connect(self):
+        status = Status.OK
+        result = None
         try:
             self.reader, self.writer = await asyncio.open_connection(self.host, self.port)
-            return self.host, 'OK'
         except Exception as e:
-            return self.host, e
+            status = Status.ERROR
+            result = e
+        self.show_status(command='connect', status=status, result= result)
 
     async def rpc(self, req):
         # send the request
         await send_message(req, self.writer)
         # receive the result
-        return await recv_message(self.reader)
+        res = await recv_message(self.reader)
+        # notification
+        self.show_status(command=req.command, status=res.status, result=res.result)
+        return res.result
 
-    async def add_method(self, method_code, method_name):
-        return await self.rpc(Request('add_method', method_code, method_name))
+    def show_status(self, command, status, result):
+        print(f"* {command.upper()} {'-' * (30 - len(command))}")
+        print(f"From host: {self.host}:{self.port}")
+        print(f"Status: {status}")
+        if status == Status.ERROR:
+            print(f"Exception: {result}")
+            sys.exit()
+
+    async def add_method(self, **kwargs):
+        return await self.rpc(Request('add_method', **kwargs))
 
     async def clean(self):
         return await self.rpc(Request('clean'))
 
     async def close(self):
-        res = await self.rpc(Request('close'))
+        response = await self.rpc(Request('close'))
         # close the connection
         self.writer.close()
-        return res
+        return response
 
     async def load_cifar10(self):
         return await self.rpc(Request('load_cifar10'))
@@ -71,10 +88,10 @@ class ProxyWorker(IWorker):
         return await self.rpc(Request('show_data'))
 
     async def shutdown(self):
-        res = await self.rpc(Request('shutdown'))
+        response = await self.rpc(Request('shutdown'))
         # close the connection
         self.writer.close()
-        return res
+        return response
 
     async def train(self, **kwargs):
         return await self.rpc(Request('train', **kwargs))

@@ -1,1 +1,6 @@
 https://realpython.com/documenting-python-code/
+https://stackabuse.com/python-async-await-tutorial
+https://docs.python.org/3/library/asyncio-task.html#running-tasks-concurrently
+https://docs.python.org/3/library/asyncio-stream.html
+https://stackoverflow.com/questions/62383366/asyncio-streamwriter-sending-multiple-writes
+https://www.markdownguide.org/basic-syntax/
